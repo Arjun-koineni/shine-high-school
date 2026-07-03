@@ -1,0 +1,280 @@
+﻿/* ── Pride Moments ── */
+.pride-section {
+  background: var(--off-white);
+  position: relative;
+  overflow: hidden;
+}
+
+.pride-bg-accent { display: none; }
+
+/* Featured */
+.pride-featured {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 3rem;
+  align-items: center;
+  background: linear-gradient(135deg, var(--navy-deep) 0%, var(--teal-dark) 100%);
+  border-radius: var(--radius-xl);
+  padding: 3rem;
+  margin-bottom: 3rem;
+  overflow: hidden;
+  position: relative;
+}
+
+.pride-featured::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 30%;
+  width: 300px;
+  height: 100%;
+  background: rgba(232,163,22,0.05);
+  clip-path: polygon(30% 0, 100% 0, 70% 100%, 0% 100%);
+}
+
+.featured-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(232,163,22,0.15);
+  border: 1px solid rgba(232,163,22,0.3);
+  border-radius: 999px;
+  padding: 0.375rem 1rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--gold-primary);
+  letter-spacing: 0.06em;
+  margin-bottom: 1rem;
+}
+
+.pride-category {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--cat-color, var(--gold-primary));
+  margin-bottom: 0.75rem;
+}
+
+.featured-content h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 1rem;
+  line-height: 1.3;
+}
+
+.featured-content p {
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.72);
+  line-height: 1.75;
+  margin-bottom: 1.5rem;
+}
+
+.featured-meta {
+  display: flex;
+  gap: 1.5rem;
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.55);
+}
+
+/* Award Graphic */
+.featured-visual { flex-shrink: 0; }
+
+.award-graphic {
+  width: 200px;
+  height: 200px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.award-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1.5px solid;
+  animation: ring-spin 8s linear infinite;
+}
+
+.award-ring-1 {
+  inset: 0;
+  border-color: rgba(232,163,22,0.3);
+  animation-direction: normal;
+}
+
+.award-ring-2 {
+  inset: 16px;
+  border-color: rgba(232,163,22,0.2);
+  animation-direction: reverse;
+  animation-duration: 12s;
+}
+
+.award-ring-3 {
+  inset: 32px;
+  border-color: rgba(232,163,22,0.15);
+  animation-duration: 16s;
+}
+
+@keyframes ring-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.award-center {
+  text-align: center;
+  z-index: 1;
+}
+
+.award-center span { font-size: 2.5rem; display: block; margin-bottom: 0.25rem; }
+.award-center p {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--gold-primary);
+  margin: 0;
+}
+.award-center small {
+  font-size: 0.62rem;
+  color: rgba(255,255,255,0.45);
+  line-height: 1.4;
+}
+
+/* Grid */
+.pride-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 3rem;
+}
+
+.pride-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.pride-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.pride-card-img {
+  width: 100%;
+  aspect-ratio: 4/3;
+  overflow: hidden;
+}
+
+.pride-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.pride-card:hover .pride-card-img img { transform: scale(1.04); }
+
+.pride-card-top {
+  padding: 1.25rem;
+  background: linear-gradient(135deg, rgba(var(--cat-color), 0.08), transparent);
+  border-bottom: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pride-icon { font-size: 1.75rem; }
+
+.pride-cat-tag {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--cat-color);
+  padding: 0.25rem 0.75rem;
+  border: 1px solid var(--cat-color);
+  border-radius: 999px;
+  opacity: 0.8;
+}
+
+.pride-card-body {
+  padding: 1.25rem;
+}
+
+.pride-card-body h4 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+}
+
+.pride-card-body p {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.65;
+  margin-bottom: 0.75rem;
+}
+
+.pride-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* Stats */
+.pride-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+
+.pride-stat {
+  padding: 2rem 1.5rem;
+  text-align: center;
+  border-right: 1px solid var(--border);
+  transition: background 0.2s;
+}
+
+.pride-stat:last-child { border-right: none; }
+.pride-stat:hover { background: var(--teal-light); }
+
+.pride-stat-icon { font-size: 1.75rem; margin-bottom: 0.5rem; }
+
+.pride-stat-value {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--teal-primary);
+  line-height: 1;
+  margin-bottom: 0.25rem;
+}
+
+.pride-stat-label {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .pride-featured { grid-template-columns: 1fr; }
+  .featured-visual { display: none; }
+  .pride-grid { grid-template-columns: 1fr; }
+  .pride-stats { grid-template-columns: repeat(2, 1fr); }
+  .pride-stat:nth-child(2) { border-right: none; }
+  .pride-stat:nth-child(1),
+  .pride-stat:nth-child(2) { border-bottom: 1px solid var(--border); }
+}
+

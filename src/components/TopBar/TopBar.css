@@ -1,0 +1,81 @@
+/* ── TOPBAR ── */
+.topbar {
+  background: var(--c-dark);
+  height: var(--topbar-h);
+  display: flex;
+  align-items: center;
+  position: relative;
+  z-index: 200;
+}
+
+.topbar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  width: 100%;
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-6);
+}
+
+.topbar-item {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.65);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.topbar-item svg {
+  color: var(--c-gold-bright);
+  flex-shrink: 0;
+}
+
+.topbar-item a {
+  color: rgba(255,255,255,0.65);
+  transition: color var(--dur-fast);
+}
+.topbar-item a:hover { color: var(--c-gold-bright); }
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.topbar-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 0.35rem 0.875rem;
+  border-radius: var(--r-full);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  transition: all var(--dur-fast);
+}
+
+.topbar-cta.green {
+  background: var(--c-primary-light);
+  color: var(--c-white);
+}
+.topbar-cta.green:hover { background: var(--c-primary-mid); }
+
+.topbar-cta.whatsapp {
+  background: #22C55E;
+  color: var(--c-white);
+}
+.topbar-cta.whatsapp:hover { background: #16A34A; }
+
+/* Mobile: hide topbar items, keep CTA */
+@media (max-width: 768px) {
+  .topbar-left { display: none; }
+  .topbar-inner { justify-content: center; }
+  .topbar-cta.green { display: none; }
+}

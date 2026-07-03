@@ -1,0 +1,177 @@
+.footer {
+  background: var(--c-dark);
+  color: rgba(255,255,255,0.7);
+}
+
+.footer__top { padding: 5rem 0 3.5rem; }
+
+.footer__grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1.2fr;
+  gap: 3rem;
+}
+
+/* Brand Column */
+.footer__col--brand {}
+
+.footer__logo {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  margin-bottom: 1.25rem;
+}
+
+.footer__logo-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid rgba(255,255,255,0.15);
+}
+.footer__logo-icon img { width: 100%; height: 100%; object-fit: cover; }
+.footer__logo-fallback { color: var(--c-primary-light); }
+
+.footer__school-name {
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  color: var(--c-white);
+  line-height: 1.2;
+}
+
+.footer__school-tag {
+  font-size: 0.68rem;
+  color: rgba(255,255,255,0.4);
+  margin-top: 2px;
+  letter-spacing: 0.04em;
+}
+
+.footer__tagline {
+  font-size: 0.85rem;
+  line-height: 1.7;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 1.5rem;
+  max-width: 300px;
+}
+
+.footer__socials { display: flex; gap: 0.75rem; }
+
+.footer__social {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.05);
+  color: rgba(255,255,255,0.6);
+  transition: all var(--dur-fast);
+}
+.footer__social:hover { transform: translateY(-2px); color: var(--c-white); }
+.footer__social--yt:hover { background: #DC2626; border-color: #DC2626; }
+.footer__social--wa:hover { background: #22C55E; border-color: #22C55E; }
+
+/* Column Headings */
+.footer__col-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.625rem;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+
+.footer__list { display: flex; flex-direction: column; gap: 0.375rem; }
+
+.footer__list-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.55);
+  padding: 0.35rem 0;
+  transition: all var(--dur-fast);
+  text-align: left;
+  width: 100%;
+}
+.footer__list-link:hover { color: var(--c-white); gap: 0.75rem; }
+
+/* Contact list */
+.footer__contact-list { display: flex; flex-direction: column; gap: 0.875rem; margin-bottom: 1.5rem; }
+
+.footer__contact-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.55);
+  line-height: 1.5;
+}
+
+.footer__contact-item--link {
+  transition: color var(--dur-fast);
+}
+.footer__contact-item--link:hover { color: var(--c-white); }
+
+.footer__ci-icon {
+  color: var(--c-gold-bright);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.footer__wa-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  background: #22C55E;
+  color: var(--c-white);
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  transition: all var(--dur-fast);
+}
+.footer__wa-btn:hover { background: #16A34A; transform: translateY(-2px); }
+
+/* Bottom bar */
+.footer__bottom {
+  border-top: 1px solid rgba(255,255,255,0.07);
+  padding: 1.25rem 0;
+}
+
+.footer__bottom-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.footer__copy {
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.35);
+}
+
+.footer__credit {
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.25);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .footer__grid { grid-template-columns: 1fr 1fr; gap: 2.5rem; }
+  .footer__col--brand { grid-column: 1 / -1; }
+}
+
+@media (max-width: 640px) {
+  .footer__grid { grid-template-columns: 1fr; gap: 2rem; }
+  .footer__top { padding: 3rem 0 2rem; }
+  .footer__bottom-inner { flex-direction: column; text-align: center; }
+}
