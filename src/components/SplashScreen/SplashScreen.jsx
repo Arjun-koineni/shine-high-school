@@ -6,7 +6,7 @@ export default function SplashScreen({ onComplete }) {
   const [isFading, setIsFading] = useState(false)
 
   useEffect(() => {
-    const total = 2200 // 2.2 seconds active loading progress
+    const total = 2800 // 2.8 seconds active loading progress
     const interval = 20
     let elapsed = 0
 

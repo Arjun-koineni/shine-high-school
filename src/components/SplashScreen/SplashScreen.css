@@ -28,7 +28,7 @@
   overflow: hidden;
 }
 
-/* Main background image with 18px blur and scale(1.05) animating to clean cover in 2.8s */
+/* Main background image with 18px blur and scale(1.08) animating to clean cover in 2.8s */
 .splash-screen__bg-img {
   position: absolute;
   inset: 0;
@@ -36,7 +36,7 @@
   height: 100%;
   object-fit: cover;
   object-position: center;
-  transform: scale(1.05);
+  transform: scale(1.08);
   filter: blur(18px);
   animation: bg-intro 2.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
   z-index: 1;
@@ -44,7 +44,7 @@
 
 @keyframes bg-intro {
   0% {
-    transform: scale(1.05);
+    transform: scale(1.08);
     filter: blur(18px);
   }
   100% {
@@ -67,13 +67,13 @@
   top: 45%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: min(85vw, 360px);
-  height: min(85vw, 360px);
+  width: min(85vw, 320px);
+  height: min(85vw, 320px);
   background: radial-gradient(
     circle, 
     #fafaf9 0%, 
     #fafaf9 45%, 
-    rgba(250, 250, 249, 0.9) 60%, 
+    rgba(250, 250, 249, 0.8) 60%, 
     rgba(250, 250, 249, 0) 75%
   );
   z-index: 3;
@@ -137,7 +137,7 @@
 @keyframes logo-intro {
   0% {
     opacity: 0;
-    transform: scale(0.9);
+    transform: scale(0.95);
   }
   100% {
     opacity: 1;
@@ -180,7 +180,7 @@
   height: 100%;
   object-fit: contain;
   /* Very soft shadow instead of a strong white glow */
-  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.05));
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.04));
 }
 
 .splash-screen__title {
