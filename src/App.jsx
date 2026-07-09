@@ -28,14 +28,17 @@ function App() {
               }}
             />
           )}
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/calendar" element={<CalendarPage />} />
-            <Route path="/admissions" element={<AdmissionsPage />} />
-            <Route path="/contact" element={<ContactPage />} />
-            <Route path="/gallery" element={<GalleryPage />} />
-            <Route path="/admin" element={<AdminPanel />} />
-          </Routes>
+          {/* Render the homepage and routes ONLY after the splash loading finishes */}
+          {isSplashCompleted && (
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/calendar" element={<CalendarPage />} />
+              <Route path="/admissions" element={<AdmissionsPage />} />
+              <Route path="/contact" element={<ContactPage />} />
+              <Route path="/gallery" element={<GalleryPage />} />
+              <Route path="/admin" element={<AdminPanel />} />
+            </Routes>
+          )}
         </div>
       </BrowserRouter>
     </DataProvider>
