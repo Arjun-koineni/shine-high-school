@@ -13,22 +13,30 @@ import AdminPanel from './components/Admin/AdminPanel'
 
 function App() {
   const [showSplash, setShowSplash] = useState(true)
-
-  if (showSplash) {
-    return <SplashScreen onComplete={() => setShowSplash(false)} />
-  }
+  const [isSplashCompleted, setIsSplashCompleted] = useState(false)
 
   return (
     <DataProvider>
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/calendar" element={<CalendarPage />} />
-          <Route path="/admissions" element={<AdmissionsPage />} />
-          <Route path="/contact" element={<ContactPage />} />
-          <Route path="/gallery" element={<GalleryPage />} />
-          <Route path="/admin" element={<AdminPanel />} />
-        </Routes>
+        <div className={isSplashCompleted ? 'splash-completed' : 'splash-active'}>
+          {showSplash && (
+            <SplashScreen
+              onComplete={() => {
+                setIsSplashCompleted(true)
+                // Wait for the fadeout animation (0.8s) before unmounting
+                setTimeout(() => setShowSplash(false), 800)
+              }}
+            />
+          )}
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/calendar" element={<CalendarPage />} />
+            <Route path="/admissions" element={<AdmissionsPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/gallery" element={<GalleryPage />} />
+            <Route path="/admin" element={<AdminPanel />} />
+          </Routes>
+        </div>
       </BrowserRouter>
     </DataProvider>
   )

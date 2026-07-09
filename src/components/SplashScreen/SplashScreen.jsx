@@ -6,25 +6,22 @@ export default function SplashScreen({ onComplete }) {
   const [isFading, setIsFading] = useState(false)
 
   useEffect(() => {
-    const total = 4000 // 4 seconds
-    const interval = 40
+    const total = 2200 // 2.2 seconds active loading progress
+    const interval = 20
     let elapsed = 0
 
     const timer = setInterval(() => {
       elapsed += interval
       const rawProgress = elapsed / total
 
-      // Smooth ease-out progress curve
-      const eased = rawProgress < 0.5
-        ? 2 * rawProgress * rawProgress
-        : 1 - Math.pow(-2 * rawProgress + 2, 2) / 2
-
+      // Smooth ease-out progress curve (cubic ease-out)
+      const eased = 1 - Math.pow(1 - rawProgress, 3)
       setProgress(Math.min(eased * 100, 100))
 
       if (elapsed >= total) {
         clearInterval(timer)
         setIsFading(true)
-        setTimeout(onComplete, 800) // Fade out duration
+        onComplete() // Trigger homepage reveal sequence
       }
     }, interval)
 
@@ -32,40 +29,56 @@ export default function SplashScreen({ onComplete }) {
   }, [onComplete])
 
   return (
-    <div className={`splash-new ${isFading ? 'is-fading' : ''}`}>
-      {/* Background Image (blurred gate) */}
-      <div className="splash-new__bg-wrap">
+    <div className={`splash-screen ${isFading ? 'splash-screen--fading' : ''}`}>
+      {/* Background Layer */}
+      <div className="splash-screen__bg-wrap">
+        {/* Blurred backdrop for letterbox aspect ratio on mobile portrait */}
         <img 
-          src="/splash-bg.jpg" 
-          alt="Campus Background" 
-          className="splash-new__bg-img" 
-          onError={e => { e.target.style.display = 'none'; }} 
+          src="/splash-bg.png" 
+          alt="" 
+          className="splash-screen__bg-blur"
         />
-        <div className="splash-new__bg-overlay"></div>
+        {/* Main sharp image with zoom and blur-to-clear animations */}
+        <img 
+          src="/splash-bg.png" 
+          alt="Shine High School Gate" 
+          className="splash-screen__bg-img" 
+        />
+        <div className="splash-screen__bg-overlay"></div>
       </div>
 
-      <div className="splash-new__content">
-        <div className="splash-new__content-inner">
-          <p className="splash-new__welcome">WELCOME TO</p>
+      {/* Main Centered Content */}
+      <div className="splash-screen__content">
+        <div className="splash-screen__brand">
+          <span className="splash-screen__welcome">WELCOME TO</span>
           
-          <div className="splash-new__logo">
-            <img src="/logo.png" alt="Logo" onError={e => { e.target.style.display = 'none'; }} />
+          <div className="splash-screen__logo-wrap">
+            <img 
+              src="/logo.png" 
+              alt="Shine High School Logo" 
+              className="splash-screen__logo" 
+            />
           </div>
 
-          <h1 className="splash-new__title">
-            <span className="splash-new__title-main">SHINE</span>
-            <span className="splash-new__title-sub">HIGH SCHOOL</span>
+          <h1 className="splash-screen__title">
+            <span className="splash-screen__title-main">SHINE</span>
+            <span className="splash-screen__title-sub">HIGH SCHOOL</span>
           </h1>
           
-          <p className="splash-new__tagline">Nurturing Minds. Building Futures.</p>
+          <p className="splash-screen__tagline">Nurturing Minds. Building Futures.</p>
         </div>
 
-        <div className="splash-new__loader">
-          <span className="splash-new__pct">{Math.round(progress)}%</span>
-          <div className="splash-new__progress-bar">
-            <div className="splash-new__progress-fill" style={{ width: `${progress}%` }} />
+        {/* Loading Indicator */}
+        <div className="splash-screen__loader">
+          <div className="splash-screen__progress-bar">
+            <div 
+              className="splash-screen__progress-fill" 
+              style={{ width: `${progress}%` }} 
+            />
           </div>
-          <span className="splash-new__loading-text">Opening the doors to excellence...</span>
+          <span className="splash-screen__loading-text">
+            Opening the doors to excellence...
+          </span>
         </div>
       </div>
     </div>
