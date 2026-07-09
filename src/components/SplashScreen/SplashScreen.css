@@ -8,7 +8,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #ffffff;
+  background: #fafaf9;
   overflow: hidden;
   transition: opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1), visibility 0.8s;
 }
@@ -24,30 +24,11 @@
   position: absolute;
   inset: 0;
   z-index: 0;
-  background: #fafaf9; /* Warm off-white */
+  background: #fafaf9;
   overflow: hidden;
 }
 
-/* Blurred copy for backdrop letterbox fill on mobile */
-.splash-screen__bg-blur {
-  position: absolute;
-  inset: -20px;
-  width: calc(100% + 40px);
-  height: calc(100% + 40px);
-  object-fit: cover;
-  filter: blur(30px);
-  opacity: 0.35;
-  z-index: 0;
-  display: none;
-}
-
-@media (max-width: 768px) and (orientation: portrait) {
-  .splash-screen__bg-blur {
-    display: block;
-  }
-}
-
-/* Main sharp image with zoom and blur-to-clear animations */
+/* Main background image with 10px blur and scale(1.05) animating to clean cover */
 .splash-screen__bg-img {
   position: absolute;
   inset: 0;
@@ -56,15 +37,15 @@
   object-fit: cover;
   object-position: center;
   transform: scale(1.05);
-  filter: blur(20px);
-  animation: bg-intro 2.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  filter: blur(10px);
+  animation: bg-intro 2.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   z-index: 1;
 }
 
 @keyframes bg-intro {
   0% {
     transform: scale(1.05);
-    filter: blur(20px);
+    filter: blur(10px);
   }
   100% {
     transform: scale(1.00);
@@ -72,24 +53,37 @@
   }
 }
 
-@media (max-width: 768px) and (orientation: portrait) {
-  .splash-screen__bg-img {
-    object-fit: contain !important;
-  }
-}
-
-/* Soft white overlay to improve readability */
+/* Very light white overlay (10% opacity) for vibrant visibility */
 .splash-screen__bg-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(255, 255, 255, 0.78);
+  background: rgba(255, 255, 255, 0.10);
   z-index: 2;
+}
+
+/* Radial white mask to completely block the baked-in background watermark logo and text */
+.splash-screen__watermark-cover {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(90vw, 440px);
+  height: min(90vw, 440px);
+  background: radial-gradient(
+    circle, 
+    rgba(255, 255, 255, 1.0) 0%, 
+    rgba(255, 255, 255, 0.98) 45%, 
+    rgba(255, 255, 255, 0.6) 65%, 
+    rgba(255, 255, 255, 0.0) 80%
+  );
+  z-index: 3;
+  pointer-events: none;
 }
 
 /* Centered Content Container */
 .splash-screen__content {
   position: relative;
-  z-index: 3;
+  z-index: 4;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -110,7 +104,7 @@
   margin-bottom: auto;
 }
 
-/* Animations */
+/* Content Animations */
 @keyframes fade-up-intro {
   0% {
     opacity: 0;
@@ -265,6 +259,19 @@
 /* ──────────────────────────────────────────────────────────
    Homepage reveal animations after splash completes
    ────────────────────────────────────────────────────────── */
+
+/* Suppress homepage content completely while splash is active */
+.splash-active > *:not(.splash-screen) {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+.splash-completed > *:not(.splash-screen) {
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
 
 /* Suppress keyframe animations while splash is active */
 .splash-active .navbar {

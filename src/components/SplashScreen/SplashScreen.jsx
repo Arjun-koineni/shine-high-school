@@ -32,12 +32,6 @@ export default function SplashScreen({ onComplete }) {
     <div className={`splash-screen ${isFading ? 'splash-screen--fading' : ''}`}>
       {/* Background Layer */}
       <div className="splash-screen__bg-wrap">
-        {/* Blurred backdrop for letterbox aspect ratio on mobile portrait */}
-        <img 
-          src="/splash-bg.png" 
-          alt="" 
-          className="splash-screen__bg-blur"
-        />
         {/* Main sharp image with zoom and blur-to-clear animations */}
         <img 
           src="/splash-bg.png" 
@@ -45,6 +39,7 @@ export default function SplashScreen({ onComplete }) {
           className="splash-screen__bg-img" 
         />
         <div className="splash-screen__bg-overlay"></div>
+        <div className="splash-screen__watermark-cover"></div>
       </div>
 
       {/* Main Centered Content */}
