@@ -44,7 +44,7 @@ export default function AdminPanel() {
             <div className="adm-login__logo-ring"><img src="/logo.png" alt="SHS" onError={e=>e.target.style.display='none'} /><GraduationCap size={34} className="adm-login__logo-icon" /></div>
             <div><h1 className="adm-login__title">Admin Portal</h1><p className="adm-login__sub">Shine High School - Bonakal</p></div>
           </div>
-          <form onSubmit={e => { e.preventDefault(); (username === adminCredentials.username && password === adminCredentials.password) ? setAuthed(true) : alert('Incorrect credentials. Please try again.') }}>
+          <form onSubmit={e => { e.preventDefault(); (username === 'admin' && password === PASS) ? setAuthed(true) : alert('Incorrect credentials. Please try again.') }}>
             <div className="form-group"><label className="form-label">Username</label><input type="text" className="form-input" placeholder="Enter username" value={username} onChange={e => setUsername(e.target.value)} autoFocus required /></div>
             <div className="form-group"><label className="form-label">Password</label><input type="password" className="form-input" placeholder="Enter admin password" value={password} onChange={e => setPassword(e.target.value)} required /></div>
             <button type="submit" className="btn btn-primary btn-block adm-login__submit">Access Dashboard</button>

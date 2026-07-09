@@ -59,7 +59,7 @@ export default function YouTube() {
           <div className="youtube-embed-wrap">
             <div className="youtube-embed">
               <video
-                src="https://s167-isny.freeconvert.com/task/6a47e461b739eeed139fcb26/SHS%20VIDEO.mp4"
+                src="/SHS%20VIDEO.mp4"
                 title="Shine High School Video"
                 controls
                 autoPlay
