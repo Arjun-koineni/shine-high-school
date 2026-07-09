@@ -39,7 +39,9 @@ export default function SplashScreen({ onComplete }) {
           className="splash-screen__bg-img" 
         />
         <div className="splash-screen__bg-overlay"></div>
+        {/* Soft covers to mask background watermark logo, text, and static progress bar */}
         <div className="splash-screen__watermark-cover"></div>
+        <div className="splash-screen__progress-cover"></div>
       </div>
 
       {/* Main Centered Content */}
