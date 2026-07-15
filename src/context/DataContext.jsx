@@ -29,7 +29,6 @@ export function DataProvider({ children }) {
     return saved ? JSON.parse(saved) : initialPrograms
   })
 
-  // Local Storage (gallery still local for now — we'll move this next)
   useEffect(() => {
     localStorage.setItem('shs_gallery', JSON.stringify(gallery))
   }, [gallery])
@@ -42,7 +41,6 @@ export function DataProvider({ children }) {
     localStorage.setItem('shs_programs', JSON.stringify(programs))
   }, [programs])
 
-  // Theme
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('shs_theme') || 'emerald'
   })
@@ -52,7 +50,6 @@ export function DataProvider({ children }) {
     localStorage.setItem('shs_theme', theme)
   }, [theme])
 
-  // Load from Supabase on mount
   useEffect(() => {
     loadEnquiries()
     loadEvents()
@@ -105,7 +102,6 @@ export function DataProvider({ children }) {
     setTheme(prev => (prev === 'emerald' ? 'navy' : 'emerald'))
   }
 
-  // Gallery (still localStorage — next file we'll move to Supabase)
   const addGalleryImage = image =>
     setGallery(prev => [{ ...image, id: Date.now() }, ...prev])
 
@@ -117,7 +113,6 @@ export function DataProvider({ children }) {
       prev.map(img => (img.id === id ? { ...img, ...updates } : img))
     )
 
-  // Events
   const addEvent = async event => {
     const { error } = await supabase
       .from('events')
@@ -161,19 +156,19 @@ export function DataProvider({ children }) {
     await loadEvents()
   }
 
-  // Pride
   const addPride = async item => {
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('pride_moments')
       .insert([item])
       .select()
 
     if (error) {
       console.error(error)
-      return
+      return { error }
     }
 
     await loadPride()
+    return { data }
   }
 
   const deletePride = async id => {
@@ -205,7 +200,6 @@ export function DataProvider({ children }) {
     await loadPride()
   }
 
-  // Enquiries
   const addEnquiry = enquiry =>
     setEnquiries(prev => [enquiry, ...prev])
 

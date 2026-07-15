@@ -1,10 +1,9 @@
 ﻿import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useData } from '../../context/DataContext'
+import { supabase } from '../../lib/supabase'
 import { schoolInfo } from '../../data/initialData'
 import { User, Users, Phone, Mail, BookOpen, MessageSquare, Send, CheckCircle, Loader2, Clock, MapPin } from 'lucide-react'
 import './EnquiryForm.css'
-
 const CLASS_LIST = ['Nursery','LKG','UKG','Class 1','Class 2','Class 3','Class 4','Class 5','Class 6','Class 7','Class 8','Class 9','Class 10']
 const CONTACT_TIMES = ['Morning 9 AM - 12 PM','Afternoon 12 PM - 3 PM','Evening 3 PM - 6 PM','Anytime during office hours']
 
@@ -31,7 +30,6 @@ function Field({ id, name, label, type = 'text', icon: Icon, value, onChange, er
 }
 
 export default function EnquiryForm() {
-  const { addEnquiry } = useData()
   const emptyForm = { studentName:'', parentName:'', phone:'', email:'', classInterested:'', preferredTime:'', address:'', message:'' }
   const [form, setForm] = useState(emptyForm)
   const [errors, setErrors] = useState({})
@@ -57,17 +55,43 @@ export default function EnquiryForm() {
   }
 
   const submit = async (e) => {
-    e.preventDefault()
-    const errs = validate()
-    if (Object.keys(errs).length) { setErrors(errs); return }
-    setSubmitting(true)
-    await new Promise(r => setTimeout(r, 850))
-    addEnquiry(form)
-    setSubmittedPhone(form.phone)
-    setSubmitting(false)
-    setSuccess(true)
-    setForm(emptyForm)
+  e.preventDefault()
+
+  const errs = validate()
+
+  if (Object.keys(errs).length) {
+    setErrors(errs)
+    return
   }
+
+  setSubmitting(true)
+
+  const { error } = await supabase
+    .from("enquiries")
+    .insert([
+      {
+        studentName: form.studentName,
+        parentName: form.parentName,
+        phone: form.phone,
+        email: form.email,
+        classInterested: form.classInterested,
+        preferredTime: form.preferredTime,
+        address: form.address,
+        message: form.message
+      }
+    ])
+
+  if (error) {
+    alert(error.message)
+    setSubmitting(false)
+    return
+  }
+
+  setSubmittedPhone(form.phone)
+  setSubmitting(false)
+  setSuccess(true)
+  setForm(emptyForm)
+}
 
   return (
     <AnimatePresence mode="wait">

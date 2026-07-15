@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useData } from '../../context/DataContext'
 import { LogOut, Users, Calendar, Image, Download, Trash2, Plus, LayoutDashboard, GraduationCap, Search, Phone, Mail, MessageCircle, CheckCircle2, X, Award } from 'lucide-react'
 import './AdminPanel.css'
+import { supabase } from '../../lib/supabase'
 
 const PASS = 'shinehighschool@bonakal'
 const CATEGORY_COLORS = { Holiday: '#00677B', Exam: '#123F48', Event: '#E8A316', Meeting: '#287145', Vacation: '#7C3AED', Festival: '#EA580C', Other: '#6B7280' }
@@ -17,7 +18,7 @@ export default function AdminPanel() {
   const [eventFilter, setEventFilter] = useState('All')
   const [newEvent, setNewEvent] = useState({ title:'', date:'', category:'Event', description:'' })
   const [newImg, setNewImg] = useState({ src:'', title:'', category:'Campus' })
-  const [newPride, setNewPride] = useState({ src:'', title:'', description:'' })
+  const [newPride, setNewPride] = useState({ file: null, src:'', title:'', description:'' })
   const navigate = useNavigate()
   const { enquiries, deleteEnquiry, markContacted, events, addEvent, deleteEvent, gallery, addGalleryImage, deleteGalleryImage, pride, addPride, deletePride } = useData()
 
@@ -58,7 +59,7 @@ export default function AdminPanel() {
   const exportCSV = () => {
     if (!enquiries.length) return alert('No enquiries to export.')
     const headers = ['Date','Student Name','Parent Name','Phone','Email','Class','Preferred Time','Address','Message','Contacted']
-    const rows = enquiries.map(e => [new Date(e.timestamp || e.id).toLocaleDateString('en-IN'), e.studentName, e.parentName, e.phone, e.email || '', e.classInterested || '', e.preferredTime || '', e.address || '', `"${(e.message||'').replace(/"/g,'""')}"`, e.contacted ? 'Yes' : 'No'])
+    const rows = enquiries.map(e => [new Date(e.timestamp || e.created_at || e.id).toLocaleDateString('en-IN'), e.studentName, e.parentName, e.phone, e.email || '', e.classInterested || '', e.preferredTime || '', e.address || '', `"${(e.message||'').replace(/"/g,'""')}"`, e.contacted ? 'Yes' : 'No'])
     const csv = [headers, ...rows].map(r => r.join(',')).join('\n')
     const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(new Blob([csv],{type:'text/csv'})), download: `SHS_Enquiries_${Date.now()}.csv` })
     a.click()
@@ -78,11 +79,43 @@ export default function AdminPanel() {
     setNewImg({ src:'', title:'', category:'Campus' })
   }
 
-  const addPrideHandler = e => {
+  const addPrideHandler = async (e) => {
     e.preventDefault()
-    if (!newPride.src) return alert('Image required.')
-    addPride({ src: newPride.src, title: newPride.title || 'Pride Moment', description: newPride.description })
-    setNewPride({ src:'', title:'', description:'' })
+
+    if (!newPride.file) {
+      return alert("Please select an image.")
+    }
+
+    const fileName = `${Date.now()}-${newPride.file.name}`
+
+    const { error: uploadError } = await supabase.storage
+      .from("pride-images")
+      .upload(fileName, newPride.file)
+
+    if (uploadError) {
+      alert("Upload failed: " + uploadError.message)
+      return
+    }
+
+    const imageUrl = supabase.storage
+      .from("pride-images")
+      .getPublicUrl(fileName).data.publicUrl
+
+    const result = await addPride({
+      image: imageUrl,
+      title: newPride.title || "Pride Moment",
+      description: newPride.description,
+      category: 'General',
+      date: new Date().toISOString().slice(0, 10),
+      venue: ''
+    })
+
+    if (result && result.error) {
+      alert("Failed to save Pride Moment: " + result.error.message)
+      return
+    }
+
+    setNewPride({ file: null, src: "", title: "", description: "" })
   }
 
   const handleImageUpload = (e, setImgState) => {
@@ -90,7 +123,7 @@ export default function AdminPanel() {
     if (file) {
       const reader = new FileReader()
       reader.onloadend = () => {
-        setImgState(prev => ({ ...prev, src: reader.result }))
+        setImgState(prev => ({ ...prev, src: reader.result, file: file }))
       }
       reader.readAsDataURL(file)
     }
@@ -130,7 +163,7 @@ export default function AdminPanel() {
                     <thead><tr><th>Date</th><th>Student</th><th>Parent</th><th>Class</th><th>Contact</th><th>Preference</th><th>Status</th><th>Actions</th></tr></thead>
                     <tbody>{[...filteredEnquiries].reverse().map(eq => (
                       <tr key={eq.id} className={eq.contacted ? 'row--contacted' : ''}>
-                        <td data-label="Date" className="td-date">{new Date(eq.timestamp || eq.id).toLocaleDateString('en-IN')}</td>
+                        <td data-label="Date" className="td-date">{new Date(eq.created_at || eq.timestamp || eq.id).toLocaleDateString('en-IN')}</td>
                         <td data-label="Student"><strong>{eq.studentName}</strong>{eq.address && <small>{eq.address}</small>}</td>
                         <td data-label="Parent">{eq.parentName}</td>
                         <td data-label="Class"><span className="badge badge-green">{eq.classInterested}</span></td>
@@ -190,8 +223,6 @@ export default function AdminPanel() {
                 <div className="form-group">
                   <label className="form-label">Upload Image *</label>
                   <input type="file" accept="image/*" className="form-input" onChange={e => handleImageUpload(e, setNewPride)} />
-                  <div style={{textAlign: 'center', margin: '5px 0', fontSize: '12px', color: '#666'}}>OR</div>
-                  <input type="url" className="form-input" value={newPride.src} onChange={e=>setNewPride({...newPride,src:e.target.value})} placeholder="Image URL..." />
                 </div>
                 <div className="form-group"><label className="form-label">Title / Caption</label><input className="form-input" value={newPride.title} onChange={e=>setNewPride({...newPride,title:e.target.value})} /></div>
                 <div className="form-group"><label className="form-label">Description</label><textarea className="form-textarea" rows={3} value={newPride.description} onChange={e=>setNewPride({...newPride,description:e.target.value})} placeholder="Brief description..." /></div>
@@ -201,7 +232,7 @@ export default function AdminPanel() {
               <div className="adm-card"><div className="adm-card__header"><h3>Pride Moments</h3><span>{pride.length} items</span></div>
                 <div className="adm-gallery-grid">{pride.map(item => (
                   <div key={item.id} className="adm-gallery-item">
-                    <img src={item.src} alt={item.title} onError={e=>e.target.parentElement.style.display='none'} />
+                    <img src={item.image} alt={item.title} onError={e=>e.target.parentElement.style.display='none'} />
                     <div className="adm-gallery-overlay"><p>{item.title}</p><button onClick={() => { if(window.confirm('Delete this moment?')) deletePride(item.id) }}><Trash2 size={14} /></button></div>
                   </div>
                 ))}</div>
