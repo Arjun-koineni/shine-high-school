@@ -3,8 +3,6 @@ import { supabase } from '../lib/supabase'
 
 import {
   galleryImages as initialGallery,
-  calendarEvents as initialEvents,
-  prideMoments as initialPride,
   schoolInfo as initialInfo,
   programs as initialPrograms
 } from '../data/initialData'
@@ -17,16 +15,8 @@ export function DataProvider({ children }) {
     return saved ? JSON.parse(saved) : initialGallery
   })
 
-  const [events, setEvents] = useState(() => {
-    const saved = localStorage.getItem('shs_events')
-    return saved ? JSON.parse(saved) : initialEvents
-  })
-
-  const [pride, setPride] = useState(() => {
-    const saved = localStorage.getItem('shs_pride')
-    return saved ? JSON.parse(saved) : initialPride
-  })
-
+  const [events, setEvents] = useState([])
+  const [pride, setPride] = useState([])
   const [enquiries, setEnquiries] = useState([])
 
   const [schoolInfo, setSchoolInfo] = useState(() => {
@@ -39,18 +29,10 @@ export function DataProvider({ children }) {
     return saved ? JSON.parse(saved) : initialPrograms
   })
 
-  // Local Storage
+  // Local Storage (gallery still local for now — we'll move this next)
   useEffect(() => {
     localStorage.setItem('shs_gallery', JSON.stringify(gallery))
   }, [gallery])
-
-  useEffect(() => {
-    localStorage.setItem('shs_events', JSON.stringify(events))
-  }, [events])
-
-  useEffect(() => {
-    localStorage.setItem('shs_pride', JSON.stringify(pride))
-  }, [pride])
 
   useEffect(() => {
     localStorage.setItem('shs_info', JSON.stringify(schoolInfo))
@@ -70,14 +52,12 @@ export function DataProvider({ children }) {
     localStorage.setItem('shs_theme', theme)
   }, [theme])
 
-  // Load enquiries from Supabase
+  // Load from Supabase on mount
   useEffect(() => {
     loadEnquiries()
+    loadEvents()
+    loadPride()
   }, [])
-
-  useEffect(() => {
-  loadEvents()
-}, [])
 
   const loadEnquiries = async () => {
     const { data, error } = await supabase
@@ -92,25 +72,40 @@ export function DataProvider({ children }) {
 
     setEnquiries(data || [])
   }
-  const loadEvents = async () => {
-  const { data, error } = await supabase
-    .from('events')
-    .select('*')
-    .order('date', { ascending: true })
 
-  if (error) {
-    console.error(error)
-    return
+  const loadEvents = async () => {
+    const { data, error } = await supabase
+      .from('events')
+      .select('*')
+      .order('date', { ascending: true })
+
+    if (error) {
+      console.error(error)
+      return
+    }
+
+    setEvents(data || [])
   }
 
-  setEvents(data || [])
-}
+  const loadPride = async () => {
+    const { data, error } = await supabase
+      .from('pride_moments')
+      .select('*')
+      .order('created_at', { ascending: false })
+
+    if (error) {
+      console.error(error)
+      return
+    }
+
+    setPride(data || [])
+  }
 
   const toggleTheme = () => {
     setTheme(prev => (prev === 'emerald' ? 'navy' : 'emerald'))
   }
 
-  // Gallery
+  // Gallery (still localStorage — next file we'll move to Supabase)
   const addGalleryImage = image =>
     setGallery(prev => [{ ...image, id: Date.now() }, ...prev])
 
@@ -124,67 +119,106 @@ export function DataProvider({ children }) {
 
   // Events
   const addEvent = async event => {
-  console.log("EVENT RECEIVED:", event)
+    const { error } = await supabase
+      .from('events')
+      .insert([event])
+      .select()
 
-  const { data, error } = await supabase
-    .from('events')
-    .insert([event])
-    .select()
+    if (error) {
+      console.error(error)
+      return
+    }
 
-  console.log("INSERT DATA:", data)
-  console.log("INSERT ERROR:", error)
-
-  if (error) {
-    console.error(error)
-    return
+    await loadEvents()
   }
 
-  await loadEvents()
+  const updateEvent = async (id, updates) => {
+    const { error } = await supabase
+      .from('events')
+      .update(updates)
+      .eq('id', id)
+      .select()
+
+    if (error) {
+      console.error(error)
+      return
+    }
+
+    await loadEvents()
   }
+
   const deleteEvent = async id => {
-  const { error } = await supabase
-    .from('events')
-    .delete()
-    .eq('id', id)
+    const { error } = await supabase
+      .from('events')
+      .delete()
+      .eq('id', id)
 
-  if (error) {
-    console.error(error)
-    return
+    if (error) {
+      console.error(error)
+      return
+    }
+
+    await loadEvents()
   }
 
-  await loadEvents()
-}
   // Pride
-  const addPride = item =>
-    setPride(prev => [{ ...item, id: Date.now() }, ...prev])
+  const addPride = async item => {
+    const { error } = await supabase
+      .from('pride_moments')
+      .insert([item])
+      .select()
 
-  const deletePride = id =>
-    setPride(prev => prev.filter(p => p.id !== id))
+    if (error) {
+      console.error(error)
+      return
+    }
 
-  const updatePride = (id, updates) =>
-    setPride(prev =>
-      prev.map(p => (p.id === id ? { ...p, ...updates } : p))
-    )
+    await loadPride()
+  }
+
+  const deletePride = async id => {
+    const { error } = await supabase
+      .from('pride_moments')
+      .delete()
+      .eq('id', id)
+
+    if (error) {
+      console.error(error)
+      return
+    }
+
+    await loadPride()
+  }
+
+  const updatePride = async (id, updates) => {
+    const { error } = await supabase
+      .from('pride_moments')
+      .update(updates)
+      .eq('id', id)
+      .select()
+
+    if (error) {
+      console.error(error)
+      return
+    }
+
+    await loadPride()
+  }
 
   // Enquiries
-
   const addEnquiry = enquiry =>
     setEnquiries(prev => [enquiry, ...prev])
 
   const deleteEnquiry = async id => {
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('enquiries')
       .delete()
       .eq('id', Number(id))
-      .select()
-
-      console.log("DELETED DATA:", data)
-      console.log("DELETE ERROR:", error)
 
     if (error) {
-  console.error("DELETE ERROR:", error)
-  return
-}
+      console.error("DELETE ERROR:", error)
+      return
+    }
 
     await loadEnquiries()
   }
@@ -194,23 +228,20 @@ export function DataProvider({ children }) {
 
     if (!enquiry) return
 
-    const { data, error } = await supabase
-  .from('enquiries')
-  .update({
-    contacted: !enquiry.contacted
-  })
-  .eq('id', Number(id))
-  .select()
-
+    const { error } = await supabase
+      .from('enquiries')
+      .update({ contacted: !enquiry.contacted })
+      .eq('id', Number(id))
 
     if (error) {
-  return
-}   
-
+      console.error("MARK CONTACTED ERROR:", error)
+      return
+    }
 
     await loadEnquiries()
   }
-    return (
+
+  return (
     <DataContext.Provider
       value={{
         gallery,
@@ -242,7 +273,9 @@ export function DataProvider({ children }) {
         theme,
         toggleTheme,
 
-        loadEnquiries
+        loadEnquiries,
+        loadEvents,
+        loadPride
       }}
     >
       {children}
