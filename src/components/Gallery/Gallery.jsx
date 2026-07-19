@@ -73,7 +73,7 @@ export default function Gallery({ isPreview = false }) {
               onClick={() => setLightbox(i)}
             >
               <img
-                src={img.src || img.thumbnail}
+                src={img.image}
                 alt={img.title}
                 loading="lazy"
                 onError={e => { e.target.src = '/placeholder.jpg' }}
@@ -104,7 +104,7 @@ export default function Gallery({ isPreview = false }) {
           </button>
           <div className="gal-lightbox__img-wrap" onClick={e => e.stopPropagation()}>
             <img
-              src={displayItems[lightbox]?.src || displayItems[lightbox]?.thumbnail}
+              src={displayItems[lightbox]?.image}
               alt={displayItems[lightbox]?.title}
             />
             <p className="gal-lightbox__caption">{displayItems[lightbox]?.title}</p>

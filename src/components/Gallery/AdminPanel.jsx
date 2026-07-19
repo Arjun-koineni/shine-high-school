@@ -1,10 +1,11 @@
 import React, { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useData } from '../../context/DataContext'
-import { LogOut, Users, Calendar, Image, Download, Trash2, Plus, LayoutDashboard, GraduationCap, Search, Phone, Mail, MessageCircle, CheckCircle2, X, Award, Lock } from 'lucide-react'
+import { LogOut, Users, Calendar, Image, Download, Trash2, Plus, LayoutDashboard, GraduationCap, Search, Phone, Mail, MessageCircle, CheckCircle2, X, Award } from 'lucide-react'
 import './AdminPanel.css'
 import { supabase } from '../../lib/supabase'
 
+const PASS = 'shinehighschool@bonakal'
 const CATEGORY_COLORS = { Holiday: '#00677B', Exam: '#123F48', Event: '#E8A316', Meeting: '#287145', Vacation: '#7C3AED', Festival: '#EA580C', Other: '#6B7280' }
 const CATEGORIES = Object.keys(CATEGORY_COLORS)
 
@@ -16,11 +17,10 @@ export default function AdminPanel() {
   const [query, setQuery] = useState('')
   const [eventFilter, setEventFilter] = useState('All')
   const [newEvent, setNewEvent] = useState({ title:'', date:'', category:'Event', description:'' })
-  const [newImg, setNewImg] = useState({ src:'', title:'', category:'Campus', file:null })
+  const [newImg, setNewImg] = useState({ src:'', title:'', category:'Campus' })
   const [newPride, setNewPride] = useState({ file: null, src:'', title:'', description:'' })
-  const [pwForm, setPwForm] = useState({ currentPassword:'', newUsername:'', newPassword:'', confirmPassword:'' })
   const navigate = useNavigate()
-  const { enquiries, deleteEnquiry, markContacted, events, addEvent, deleteEvent, gallery, addGalleryImage, deleteGalleryImage, uploadGalleryImage, pride, addPride, deletePride, adminSettings, updateAdminSettings } = useData()
+  const { enquiries, deleteEnquiry, markContacted, events, addEvent, deleteEvent, gallery, addGalleryImage, deleteGalleryImage, pride, addPride, deletePride } = useData()
 
   const filteredEnquiries = useMemo(() => enquiries.filter(eq => {
     const text = `${eq.studentName || ''} ${eq.parentName || ''} ${eq.phone || ''} ${eq.classInterested || ''}`.toLowerCase()
@@ -45,7 +45,7 @@ export default function AdminPanel() {
             <div className="adm-login__logo-ring"><img src="/logo.png" alt="SHS" onError={e=>e.target.style.display='none'} /><GraduationCap size={34} className="adm-login__logo-icon" /></div>
             <div><h1 className="adm-login__title">Admin Portal</h1><p className="adm-login__sub">Shine High School - Bonakal</p></div>
           </div>
-          <form onSubmit={e => { e.preventDefault(); (username === adminSettings.username && password === adminSettings.password) ? setAuthed(true) : alert('Incorrect credentials. Please try again.') }}>
+          <form onSubmit={e => { e.preventDefault(); (username === 'admin' && password === PASS) ? setAuthed(true) : alert('Incorrect credentials. Please try again.') }}>
             <div className="form-group"><label className="form-label">Username</label><input type="text" className="form-input" placeholder="Enter username" value={username} onChange={e => setUsername(e.target.value)} autoFocus required /></div>
             <div className="form-group"><label className="form-label">Password</label><input type="password" className="form-input" placeholder="Enter admin password" value={password} onChange={e => setPassword(e.target.value)} required /></div>
             <button type="submit" className="btn btn-primary btn-block adm-login__submit">Access Dashboard</button>
@@ -72,35 +72,11 @@ export default function AdminPanel() {
     setNewEvent({ title:'', date:'', category:'Event', description:'' })
   }
 
-  const addImgHandler = async e => {
+  const addImgHandler = e => {
     e.preventDefault()
     if (!newImg.src) return alert('Image required.')
-
-    let imageUrl = newImg.src
-
-    // If the user picked a file (rather than pasting a URL), upload it to
-    // Supabase Storage and use the returned public URL.
-    if (newImg.file) {
-      const { data, error } = await uploadGalleryImage(newImg.file)
-      if (error) {
-        alert('Upload failed: ' + error.message)
-        return
-      }
-      imageUrl = data
-    }
-
-    const result = await addGalleryImage({
-      image: imageUrl,
-      title: newImg.title || 'Campus moment',
-      category: newImg.category
-    })
-
-    if (result && result.error) {
-      alert('Failed to save image: ' + result.error.message)
-      return
-    }
-
-    setNewImg({ src: '', title: '', category: 'Campus', file: null })
+    addGalleryImage({ src: newImg.src, thumbnail: newImg.src, title: newImg.title || 'Campus moment', category: newImg.category })
+    setNewImg({ src:'', title:'', category:'Campus' })
   }
 
   const addPrideHandler = async (e) => {
@@ -158,34 +134,7 @@ export default function AdminPanel() {
     { id:'calendar', label:'Calendar', icon: Calendar, count: events.length },
     { id:'gallery', label:'Gallery', icon: Image, count: gallery.length },
     { id:'pride', label:'Pride Moments', icon: Award, count: pride.length },
-    { id:'settings', label:'Settings', icon: Lock },
   ]
-
-  const changePasswordHandler = async e => {
-    e.preventDefault()
-    if (pwForm.currentPassword !== adminSettings.password) {
-      return alert('Current password is incorrect.')
-    }
-    if (!pwForm.newPassword || pwForm.newPassword.length < 6) {
-      return alert('New password must be at least 6 characters.')
-    }
-    if (pwForm.newPassword !== pwForm.confirmPassword) {
-      return alert('New password and confirmation do not match.')
-    }
-
-    const result = await updateAdminSettings({
-      username: pwForm.newUsername || adminSettings.username,
-      password: pwForm.newPassword
-    })
-
-    if (result && result.error) {
-      alert('Failed to update credentials: ' + result.error.message)
-      return
-    }
-
-    alert('Admin credentials updated successfully.')
-    setPwForm({ currentPassword:'', newUsername:'', newPassword:'', confirmPassword:'' })
-  }
 
   return (
     <div className="adm-layout">
@@ -263,39 +212,7 @@ export default function AdminPanel() {
                 {newImg.src && <div className="adm-img-preview"><img src={newImg.src} alt="preview" onError={e=>e.target.style.display='none'} /></div>}
                 <button type="submit" className="btn btn-primary btn-block"><Plus size={17} /> Add to Gallery</button>
               </form>
-              <div className="adm-card"><div className="adm-card__header"><h3>Gallery</h3><span>{gallery.length} images</span></div><div className="adm-gallery-grid">{gallery.map(img => <div key={img.id} className="adm-gallery-item"><img src={img.image} alt={img.title} onError={e=>e.target.parentElement.style.display='none'} /><div className="adm-gallery-overlay"><p>{img.title}</p><button onClick={() => { if(window.confirm('Delete image?')) deleteGalleryImage(img.id) }}><Trash2 size={14} /></button></div></div>)}</div></div>
-            </div>
-          )}
-
-          {tab === 'settings' && (
-            <div className="adm-split">
-              <form className="adm-card adm-form" onSubmit={changePasswordHandler}>
-                <h3 className="adm-form__title"><Lock size={18} /> Change Admin Credentials</h3>
-                <div className="form-group">
-                  <label className="form-label">Current Password *</label>
-                  <input type="password" className="form-input" value={pwForm.currentPassword} onChange={e=>setPwForm({...pwForm,currentPassword:e.target.value})} placeholder="Enter current password" required />
-                </div>
-                <div className="form-group">
-                  <label className="form-label">New Username</label>
-                  <input type="text" className="form-input" value={pwForm.newUsername} onChange={e=>setPwForm({...pwForm,newUsername:e.target.value})} placeholder={adminSettings.username} />
-                </div>
-                <div className="form-group">
-                  <label className="form-label">New Password *</label>
-                  <input type="password" className="form-input" value={pwForm.newPassword} onChange={e=>setPwForm({...pwForm,newPassword:e.target.value})} placeholder="At least 6 characters" required />
-                </div>
-                <div className="form-group">
-                  <label className="form-label">Confirm New Password *</label>
-                  <input type="password" className="form-input" value={pwForm.confirmPassword} onChange={e=>setPwForm({...pwForm,confirmPassword:e.target.value})} placeholder="Re-enter new password" required />
-                </div>
-                <button type="submit" className="btn btn-primary btn-block"><Lock size={17} /> Update Credentials</button>
-              </form>
-              <div className="adm-card">
-                <div className="adm-card__header"><h3>Current Login</h3></div>
-                <div style={{ padding: '1.25rem' }}>
-                  <p style={{ marginBottom: '0.5rem' }}>Username: <strong>{adminSettings.username}</strong></p>
-                  <p style={{ color: '#6B7280', fontSize: '0.9rem' }}>You can change your username and password as many times as you like. You'll need to log in again with the new credentials next time.</p>
-                </div>
-              </div>
+              <div className="adm-card"><div className="adm-card__header"><h3>Gallery</h3><span>{gallery.length} images</span></div><div className="adm-gallery-grid">{gallery.map(img => <div key={img.id} className="adm-gallery-item"><img src={img.src || img.thumbnail} alt={img.title} onError={e=>e.target.parentElement.style.display='none'} /><div className="adm-gallery-overlay"><p>{img.title}</p><button onClick={() => { if(window.confirm('Delete image?')) deleteGalleryImage(img.id) }}><Trash2 size={14} /></button></div></div>)}</div></div>
             </div>
           )}
 
